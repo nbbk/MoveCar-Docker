@@ -1,0 +1,81 @@
+services:
+  # ==========================================
+  # 1. MoveCar 核心应用容器 (Node.js)
+  # ==========================================
+  movecar-app:
+    build: .
+    container_name: movecar_app
+    restart: always
+    
+    # 【端口映射】外异内同的最佳实践
+    # 左边 13000: 飞牛 NAS 暴露给局域网的端口 (如：Cloudflare Tunnel 填这个)
+    # 右边 3000: Docker 容器内部 Node.js 监听的端口 (无需修改)
+    ports:
+      - "13000:3000" 
+    # === 限制日志大小，防止长期运行占用 NAS 空间 ===
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"   # 每个日志文件最大 10MB
+        max-file: "3"     # 最多保留 3 个滚动日志
+
+    environment:
+      # --- 系统基础运行配置 ---
+      - NODE_ENV=production
+      - PORT=3000 # 明确告诉程序在容器内部监听 3000 端口
+      - REDIS_URL=redis://movecar-redis:6379 # 内部连接 Redis 的专属通道
+      
+      # --- 🌐 代理网络配置 (拯救 Bark 通知海外阻断的关键) ---
+      # 请将 192.168.1.X:7890 替换为你实际的代理服务器 IP 和端口
+      # 加上这两行后，Node.js 发出的通知请求会全部走代理通道，瞬间秒发
+      #- HTTP_PROXY=http://192.168.1.X:7890
+      #- HTTPS_PROXY=http://192.168.1.X:7890
+
+      # --- 🔗 外部访问域名 (二维码和通知跳转的核心) ---
+      # 必须带 https://，末尾不要加斜杠
+      - EXTERNAL_URL=https://car.yourdomain.com
+      
+      # ==========================================
+      # 🚘 车主配置区 (支持无限多用户扩容)
+      # 访问参数 u 的值会自动转为大写匹配这里的后缀
+      # ==========================================
+      
+      # 【默认车主】(当扫码链接不带 ?u= 参数时生效)
+      - CAR_TITLE=默认车主
+      - PUSHPLUS_TOKEN=你的默认PushPlusToken
+      
+      # 【用户 1：USER1】(访问 /?u=USER1)
+      - CAR_TITLE_USER1=张三(京A88888)
+      - PUSHPLUS_TOKEN_USER1=你的PushPlusToken填这里
+      - BARK_URL_USER1=https://api.day.app/你的Bark设备Key
+      - PHONE_NUMBER_USER1=13800138000
+      
+      # 【用户 2：USER2】(访问 /?u=user2)
+      - CAR_TITLE_USER2=李四(沪B66666)
+      - PUSHPLUS_TOKEN_USER2=你的PushPlusToken填这里
+      - BARK_URL_USER2=https://api.day.app/李四的Bark设备Key
+      - PHONE_NUMBER_USER2=13912345678
+
+    # 声明依赖关系：必须等 Redis 启动后，应用才能启动
+    depends_on:
+      - movecar-redis
+
+  # ==========================================
+  # 2. Redis 数据库容器 (负责状态存储与断点续传)
+  # ==========================================
+  movecar-redis:
+    image: redis:7-alpine
+    container_name: movecar_redis
+    restart: always
+    # 出于安全考虑，Redis 不需要映射端口到 NAS 主机，只在 Docker 虚拟网内互通即可
+    
+    volumes:
+      # 【数据持久化】确保 NAS 重启或更新容器后，坐标和状态数据不丢失
+      - redis_data:/data 
+      
+    # 开启 AOF 持久化模式，数据写入更安全
+    command: redis-server --appendonly yes 
+
+# 声明命名卷
+volumes:
+  redis_data:
