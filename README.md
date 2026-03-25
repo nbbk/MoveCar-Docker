@@ -47,14 +47,14 @@ cd MoveCar-Docker
 ```
 
 ### 2. 配置环境变量
-使用文本编辑器打开 `docker-compose.yml` 文件，修改其中的核心环境变量：
+使用文本编辑器打开 `docker-compose.yml` 文件，修改其中的核心环境变量（具体方式根据自己喜欢的来）：
 * 必须将 `EXTERNAL_URL` 修改为你自己准备使用的外网域名。
 * 根据需求填写 `PUSHPLUS_TOKEN` 或 `BARK_URL`。
 
 ### 3. 一键构建并启动
 在项目根目录下，执行以下启动命令：
 ```bash
-docker compose up -d --build
+sudo docker compose up -d --build
 ```
 等待镜像构建完成后，服务将运行在宿主机的 `13000` 端口。配合反向代理（如 Nginx、Lucky 或 Cloudflare Tunnel）绑定 HTTPS 域名即可正式使用！
 
