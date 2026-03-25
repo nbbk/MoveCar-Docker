@@ -36,7 +36,7 @@
 将本仓库克隆到你的本地环境，并进入项目目录：
 ```bash
 git clone https://github.com/nbbk/MoveCar-Docker.git
-cd MoveCar
+cd movecar
 ```
 
 ### 2. 配置环境变量
