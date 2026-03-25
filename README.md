@@ -27,16 +27,23 @@
 
 ## 📦 快速部署指南
 
-本系统采用标准化的 Docker Compose 架构，只需三步即可完成私有化部署。
+本系统采用标准化的 Docker Compose 架构，只需简单几步即可完成私有化部署。
 
 ### 0. 准备工作
 请确保你的服务器或 NAS 上已经安装了 Docker 和 Docker Compose。
 
-### 1. 克隆项目代码
-将本仓库克隆到你的本地环境，并进入项目目录：
+### 1. 选择目录并克隆代码 (⚠️ 重要)
+通过 SSH 登录你的 NAS 或服务器后，**请先进入你平时专门存放 Docker 项目的承载目录**（例如飞牛 NAS 的 `/vol1/1000/Docker` 或群晖的 `/volume1/docker`），然后再执行下载命令：
+(直接下载项目文件，然后手动上传也行，看个人习惯)
 ```bash
+# 1. 进入你的 Docker 数据存放目录（请根据你的实际路径修改）
+cd /你的/Docker/专属/目录
+
+# 2. 克隆本项目代码
 git clone https://github.com/nbbk/MoveCar-Docker.git
-cd movecar
+
+# 3. 进入刚刚下载好的项目根目录
+cd MoveCar-Docker
 ```
 
 ### 2. 配置环境变量
@@ -61,16 +68,18 @@ docker compose up -d --build
 | :--- | :--- | :--- |
 | `EXTERNAL_URL` | **是** | 你的外网访问域名（必须带 `https://`），用于生成专属二维码和拼接确认链接。 |
 | `CAR_TITLE` | 否 | 默认车主的称呼或车牌号，例如 `京A88888`。 |
+| `PHONE_NUMBER` | 否 | 默认车主的手机号，例如 `13800138000`。 |
 | `PUSHPLUS_TOKEN` | 否 | 默认车主的 PushPlus 推送 Token（用于微信接收通知）。 |
 | `BARK_URL` | 否 | 默认车主的 Bark 推送链接（例如 `https://api.day.app/你的Key`，用于苹果设备接收通知）。 |
 | `HTTP_PROXY` / `HTTPS_PROXY` | 否 | 局域网代理地址（例如 `http://192.168.1.9:7890`），**NAS 用户解决 Bark 阻断必备**。 |
 
 ### 👨‍👩‍👧 多用户高级配置 (变量名后缀加 `_大写用户名`)
 为了给家人或朋友的车也用上这个系统，你可以直接在 `docker-compose.yml` 中追加带后缀的环境变量（后缀必须大写）。
-例如，你想配置一个用户参数为 `nianba`：
-* `CAR_TITLE_NIANBA=张三(京A88888)`
-* `PUSHPLUS_TOKEN_NIANBA=你的PushPlusToken`
-* `BARK_URL_NIANBA=https://api.day.app/你的BarkKey`
+例如，你想配置一个用户参数为 `zhangsan`：
+* `CAR_TITLE_ZHANGSAN=张三(京A88888)`
+* `PUSHPLUS_TOKEN_ZHANGSAN=你的PushPlusToken`
+* `BARK_URL_ZHANGSAN=https://api.day.app/你的BarkKey`
+* `PHONE_NUMBER_ZHANGSAN=你的手机号码`
 
 ---
 
