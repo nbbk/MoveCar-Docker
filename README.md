@@ -35,7 +35,7 @@
 ### 1. 克隆项目代码
 将本仓库克隆到你的本地环境，并进入项目目录：
 ```bash
-git clone [https://github.com/你的用户名/MoveCar.git](https://github.com/你的用户名/MoveCar.git)
+git clone https://github.com/nbbk/MoveCar-Docker.git
 cd MoveCar
 ```
 
@@ -90,4 +90,4 @@ environment:
 ---
 
 ## 🤝 鸣谢与贡献
-如果你觉得这个项目对你有帮助，欢迎点亮 ⭐️ Star！也欢迎提交 Issue 和 Pull Request 一起完善系统。
+如果你觉得这个项目对你有帮助，欢迎点亮 ⭐️ Star！
